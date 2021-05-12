@@ -14,7 +14,7 @@ ban_words = ['банворд', 'два', 'пидор']
 str(ban_words)
 
 # Роли пользователей в группе, на которых бот не реагирует
-super_user_group_roles = ['administrator', 'creator']
+super_user_group_roles = ['administrator', 'creator', 'editor']
 
 
 def send_message(id, text):
