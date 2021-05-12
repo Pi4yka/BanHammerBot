@@ -1,11 +1,13 @@
 import re
-
+import os
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType, VkChatEventType
 
-from config import token, group_id
+# Переменные окружения
+TOKEN = os.getenv('TOKEN')
+GROUP_ID = os.getenv('GROUP_ID')
 
-vk_session = vk_api.VkApi(token=token)
+vk_session = vk_api.VkApi(token=TOKEN)
 long_poll = VkLongPoll(vk_session)
 
 ban_words = ['банворд', 'два', 'пидор']
@@ -56,13 +58,13 @@ for event in long_poll.listen():
     if event.type == VkEventType.CHAT_UPDATE:
         if event.update_type == VkChatEventType.USER_JOINED:
             joined_user_id = event.info.get('user_id')
-            if not is_group_admin(group_id, joined_user_id):
-                if not is_group_member(group_id, joined_user_id):
+            if not is_group_admin(GROUP_ID, joined_user_id):
+                if not is_group_member(GROUP_ID, joined_user_id):
                     remove_user_from_chat(event.chat_id, joined_user_id)
 
     if event.type == VkEventType.MESSAGE_NEW:
         if event.from_chat:
-            if not is_group_admin(group_id, event.user_id):
+            if not is_group_admin(GROUP_ID, event.user_id):
                 chat_id = event.chat_id
                 text = event.text.lower()
                 words = parse_words(text)
