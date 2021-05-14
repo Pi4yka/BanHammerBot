@@ -1,21 +1,28 @@
 import re
 import os
+import psycopg2
 import vk_api
+
+from database_connect import get_values, found_word
 from vk_api.longpoll import VkLongPoll, VkEventType, VkChatEventType
+
 
 # Переменные окружения
 TOKEN = os.getenv('TOKEN')
 GROUP_ID = os.getenv('GROUP_ID')
+DATABASE_URL = os.getenv('DATABASE_URL')
+
 
 vk_session = vk_api.VkApi(token=TOKEN)
 long_poll = VkLongPoll(vk_session)
 
-ban_words = ['банворд', 'два', 'пидор']
-str(ban_words)
+#ban_words = ['банворд', 'два', 'пидор']
+ban_words = get_values(DATABASE_URL)
+
 
 # Роли пользователей в группе, на которых бот не реагирует
-super_user_group_roles = ['administrator', 'creator', 'editor']
-
+#super_user_group_roles = ['administrator', 'creator','editor']
+super_user_group_roles = ['administrator', 'creator']
 
 def send_message(id, text):
     vk_session.get_api().messages.send(chat_id=id, message=text, random_id=0)
@@ -61,7 +68,6 @@ for event in long_poll.listen():
             if not is_group_admin(GROUP_ID, joined_user_id):
                 if not is_group_member(GROUP_ID, joined_user_id):
                     remove_user_from_chat(event.chat_id, joined_user_id)
-
     if event.type == VkEventType.MESSAGE_NEW:
         if event.from_chat:
             if not is_group_admin(GROUP_ID, event.user_id):
@@ -70,7 +76,17 @@ for event in long_poll.listen():
                 words = parse_words(text)
 
                 for word in words:
-                    if word in ban_words:
-                        delete_message(event,
-                                       f'[id{event.user_id}|{get_name(event.user_id)}], вы произнесли слова, которые произносить не следовало. Сейчас мы сделали вид, что не заметили, но в следующий раз мы заберем вас с собой 👽')
-                        break
+                    for i, ban in enumerate(ban_words):
+                        if word in ban[1]:
+                            if found_word(DATABASE_URL, ban_words, ban[0], event.user_id) == False:
+                                delete_message(event,
+                                    f'[id{event.user_id}|{get_name(event.user_id)}], вы произнесли слова, которые произносить не следовало. Сейчас мы сделали вид, что не заметили, но в следующий раз мы заберем вас с собой 👽')
+                                break
+                            else:
+                                #remove_user_from_chat(chat_id, event.user_id)
+                                delete_message(event,
+                                    f'[id{event.user_id}|{get_name(event.user_id)}], вы произнесли слова, которые произносить не следовало. Сейчас мы сделали вид, что не заметили, но в следующий раз мы заберем вас с собой 👽')
+                                print(event.user_id)
+                                print('бан')
+                                break
+                        
