@@ -4,7 +4,6 @@ default_counter_value = 1
 pos_num_in_user_tuple = 0
 pos_num_in_user_list = 1
 pos_num_in_user_warn = 0
-
 pos_num_in_word_list = 0
 pos_num_in_word_tuple = 0
 
@@ -19,11 +18,11 @@ def get_values(url):
 
     select = conn.cursor()
     select.execute('SELECT category_id, TRIM(word) FROM ban_word')
-    ban_words = select.fetchall()
+    received_word_list = select.fetchall()
 
     select.close()
     conn.close()
-    return ban_words
+    return received_word_list
 
 #подключение к базе данных и получение информации о нарушении пользователем
 def get_user_data(url, category_id, user_id):
@@ -44,7 +43,7 @@ def add_user_data_counter(url, user_id, category_id):
 
     select = conn.cursor()
     select.execute('INSERT INTO warning_user_counter(user_id, counter, category_id) VALUES(%s, %s, %s)', 
-                        (user_id, default_counter_value, category_id))
+        (user_id, default_counter_value, category_id))
     conn.commit()
 
     select.close()
@@ -68,7 +67,7 @@ def increase_user_counter(url, user_id, user_data, category_id):
 
     select = conn.cursor()
     select.execute('UPDATE warning_user_counter SET counter = %s WHERE user_id = %s AND category_id = %s', 
-                        (str(user_data[pos_num_in_user_tuple][pos_num_in_user_list] + default_counter_value), user_id, category_id))
+        (str(user_data[pos_num_in_user_tuple][pos_num_in_user_list] + default_counter_value), user_id, category_id))
     conn.commit()
 
     select.close()
@@ -77,7 +76,6 @@ def increase_user_counter(url, user_id, user_data, category_id):
 #инициализация получения данных и взаимодействия с базой для добавления/обновления данных
 def found_word(url, category_id, user_id):
     user_data = get_user_data(url, category_id, user_id)
-
     if not user_data:
         add_user_data_counter(url,user_id, category_id)
         return 0
