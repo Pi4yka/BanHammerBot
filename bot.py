@@ -22,8 +22,8 @@ long_poll = VkLongPoll(vk_session)
 list_of_forbidden_words = get_values(DATABASE_URL)
 
 
-# Роли пользователей в группе, на которых бот не реагирует
-super_user_group_roles = ['administrator', 'creator', 'editor']
+# Роли пользователей в группе, на которых бот не реагирует  , 'editor'
+super_user_group_roles = ['administrator', 'creator']
 
 def send_message(id, text):
     vk_session.get_api().messages.send(chat_id=id, message=text, random_id=0)
@@ -79,7 +79,7 @@ for event in long_poll.listen():
 
                 for word in words:
                     for i, received_word_list in enumerate(list_of_forbidden_words):
-                        if word in received_word_list[received_word_id]:
+                        if re.search(received_word_list[received_word_id], word):
                             delete_message_flag = True
                             break
                     if delete_message_flag == True: 

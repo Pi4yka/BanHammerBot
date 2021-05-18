@@ -81,7 +81,7 @@ def found_word(url, category_id, user_id):
         return 0
     else:
         max_available_warnings = get_available_warnings(url, category_id)
-        if user_data[pos_num_in_user_tuple][pos_num_in_user_list] < max_available_warnings[pos_num_in_user_warn]:
+        if user_data[pos_num_in_user_tuple][pos_num_in_user_list] <= max_available_warnings[pos_num_in_user_warn]:
             increase_user_counter(url, user_id, user_data, category_id)
             return 0
         else:
