@@ -22,8 +22,8 @@ long_poll = VkLongPoll(vk_session)
 list_of_forbidden_words = get_values(DATABASE_URL)
 
 
-# Роли пользователей в группе, на которых бот не реагирует  , 'editor'
-super_user_group_roles = ['administrator', 'creator']
+# Роли пользователей в группе, на которых бот не реагирует 
+super_user_group_roles = ['administrator', 'creator', 'editor']
 
 def send_message(id, text):
     vk_session.get_api().messages.send(chat_id=id, message=text, random_id=0)
