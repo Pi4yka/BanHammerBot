@@ -25,5 +25,5 @@ docker build -t ban-hammer-bot:1.0.0 .
 Запуск контейнера на основе образа c переменными окружения:
 
 ```commandline
-docker run -e TOKEN=<token> -e GROUP_ID=<id> ban-hammer-bot:1.0.0
+docker run -e TOKEN=<token> -e GROUP_ID=<id> -e DATABASE_URL=<url> ban-hammer-bot:1.0.0
 ```
